@@ -540,6 +540,33 @@
         }
     }, { once: true }); // Hanya berjalan sekali saat klik pertama di halaman
 </script>
+<script>
+    let isPlaying = false;
 
+    function toggleMusic() {
+        const iframe = document.getElementById('youtube-player');
+        const musicIcon = document.getElementById('music-icon');
+        const musicText = document.getElementById('music-text');
+        const playerOrigin = 'https://www.youtube.com';
+
+        if (!isPlaying) {
+            iframe.contentWindow.postMessage(
+                '{"event":"command","func":"playVideo","args":""}', 
+                playerOrigin
+            );
+            musicIcon.className = "fa-solid fa-volume-high text-emerald-500 animate-pulse";
+            musicText.textContent = "Matikan Musik";
+            isPlaying = true;
+        } else {
+            iframe.contentWindow.postMessage(
+                '{"event":"command","func":"pauseVideo","args":""}', 
+                playerOrigin
+            );
+            musicIcon.className = "fa-solid fa-volume-xmark text-slate-400";
+            musicText.textContent = "Putar Musik";
+            isPlaying = false;
+        }
+    }
+</script>
 </body>
 </html>
