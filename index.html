@@ -471,14 +471,31 @@
 <!-- ===================================================== -->
 <!-- BACKGROUND MUSIC PLAYER -->
 <!-- ===================================================== -->
-<audio id="bg-music" loop>
+<!--<audio id="bg-music" loop>
    <source src="Astaga Bercanda - Akbar Chalay ft Mingse _Pop Punk Cover _ VoxAura _ nggak bercanda ini mah ngegas 🤘.mp3" type="audio/mpeg">
     Browser Anda tidak mendukung elemen audio.
 </audio>
 
 <!-- Widget Kontrol Musik Melayang di Pojok Kiri Bawah -->
-<div class="fixed bottom-6 left-6 z-40">
+<!-- <div class="fixed bottom-6 left-6 z-40">
     <button onclick="toggleMusic()" id="music-btn" class="bg-white/80 hover:bg-white backdrop-blur-md text-slate-700 border border-slate-200 px-4 py-2.5 rounded-full shadow-lg text-xs font-medium flex items-center space-x-2 transition-all">
+        <i id="music-icon" class="fa-solid fa-volume-xmark text-slate-400"></i>
+        <span id="music-text">Putar Musik</span>
+    </button>
+</div> --> 
+<!-- ===================================================== -->
+<!-- BACKGROUND MUSIC PLAYER (YOUTUBE EMBED TERSEMBUNYI) -->
+<!-- ===================================================== -->
+<div style="display: none;">
+    <iframe id="youtube-player" 
+            src="https://www.youtube.com/embed/AGvGldtbJSU?enablejsapi=1&loop=1&playlist=AGvGldtbJSU" 
+            allow="autoplay">
+    </iframe>
+</div>
+
+<!-- Widget Kontrol Musik Melayang di Pojok Kiri Bawah -->
+<div class="fixed bottom-6 left-6 z-40">
+    <button onclick="toggleMusic()" id="music-btn" class="bg-white/80 hover:bg-white backdrop-blur-md text-slate-700 border border-slate-200 px-4 py-2.5 rounded-full shadow-lg text-xs font-medium flex items-center space-x-2 transition-all cursor-pointer">
         <i id="music-icon" class="fa-solid fa-volume-xmark text-slate-400"></i>
         <span id="music-text">Putar Musik</span>
     </button>
