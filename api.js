@@ -5,6 +5,7 @@
 
 //const API_URL = 'https://script.google.com/macros/s/AKfycbwG2s3ZeEa0NORzzJDSvCuhzL9j1ssahPFCNzCIeXMSE2jZP2riFnQTnbYawc6vT8YfWQ/exec';
 
+//https://script.google.com/macros/s/AKfycbwG2s3ZeEa0NORzzJDSvCuhzL9j1ssahPFCNzCIeXMSE2jZP2riFnQTnbYawc6vT8YfWQ/exec
 
 // =============================================
 // IAT PORTAL API
@@ -199,4 +200,29 @@ async function sendRequest(
 
     }
 
+}
+
+// =============================================
+// NEWS (BERITA HARI INI)
+// Butuh sheet "News" + kode tambahan di Apps Script
+// =============================================
+
+async function getNewsFromDatabase() {
+    const response = await fetch(API_URL + '?action=getNews');
+    if (!response.ok) throw new Error('HTTP Error: ' + response.status);
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message || 'Gagal mengambil news');
+    return result.data || [];
+}
+
+async function addNewsToDatabase(news) {
+    return sendRequest('addNews', news);
+}
+
+async function updateNewsToDatabase(news) {
+    return sendRequest('updateNews', news);
+}
+
+async function deleteNewsFromDatabase(id) {
+    return sendRequest('deleteNews', { id: id });
 }
