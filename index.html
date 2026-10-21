@@ -4,133 +4,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Utama - Manajemen Web Internal</title>
+    <title>Portal Utama - Applied Technology IAT</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <script src="api.js"></script>
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .hero-bg {
+            background:
+                radial-gradient(circle at 85% 15%, rgba(250, 204, 21, .18), transparent 40%),
+                radial-gradient(circle at 10% 90%, rgba(14, 165, 233, .25), transparent 45%),
+                linear-gradient(135deg, #0b1b33 0%, #10294d 55%, #0d3a5c 100%);
         }
+        .grid-lines {
+            background-image:
+                linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .hazard { background: repeating-linear-gradient(-45deg, #facc15 0 12px, #0b1b33 12px 24px); }
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .ticker-track { display: inline-flex; animation: ticker 40s linear infinite; }
+        .ticker-track:hover { animation-play-state: paused; }
+        @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        .rise { animation: rise .5s ease both; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <!-- HEADER -->
+    <header class="bg-[#0b1b33]/95 backdrop-blur border-b border-white/10 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-
             <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded-xl overflow-hidden shadow-md">
+                <div class="w-11 h-11 rounded-xl overflow-hidden bg-white p-1 shadow-md">
                     <img src="IAT LOGO 2.png" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg text-slate-900 leading-tight">
-                        Applied Technology portal website
-                    </h1>
-                    <p class="text-xs text-slate-500">
-                        Pusat Akses & Manajemen Aplikasi
-                    </p>
+                    <h1 class="font-bold text-base sm:text-lg text-white leading-tight">Applied Technology Portal</h1>
+                    <p class="text-[11px] text-sky-200/70">Pusat Akses & Manajemen Aplikasi</p>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-3">
-                <button id="btn-tambah" onclick="openModal()" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition-all shadow-sm hover:shadow flex items-center space-x-2">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>Tambah Web Baru</span>
+            <div class="flex items-center space-x-2">
+                <button id="btn-tambah" onclick="openModal()" class="hidden bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition-all items-center space-x-2">
+                    <i class="fa-solid fa-plus text-xs"></i><span class="hidden sm:inline">Tambah Web</span>
                 </button>
+                <div id="admin-auth-container"></div>
+            </div>
+        </div>
+    </header>
 
-                <div id="admin-auth-container">
-                    <button onclick="openLoginModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3.5 py-2 rounded-xl text-sm transition-all flex items-center space-x-2">
-                        <i class="fa-solid fa-lock text-xs"></i>
-                        <span>Admin Login</span>
+    <!-- NEWS TICKER -->
+    <div class="bg-yellow-400 text-slate-900 text-sm font-semibold overflow-hidden flex items-stretch">
+        <div class="bg-[#0b1b33] text-yellow-400 px-4 py-2 flex items-center gap-2 shrink-0 z-10 mono text-xs tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> INFO TERKINI
+        </div>
+        <div class="flex-1 overflow-hidden whitespace-nowrap py-2">
+            <div id="news-ticker" class="ticker-track"><span class="px-6">Memuat informasi...</span></div>
+        </div>
+    </div>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+        <!-- HERO -->
+        <section class="hero-bg rounded-3xl text-white shadow-2xl relative overflow-hidden rise">
+            <div class="absolute inset-0 grid-lines"></div>
+            <div class="hazard h-2 w-full relative"></div>
+            <div class="relative p-6 sm:p-10 grid lg:grid-cols-3 gap-8 items-center">
+                <div class="lg:col-span-2">
+                    <p class="mono text-xs text-yellow-300 tracking-[0.2em] mb-3" id="greeting-label">SELAMAT DATANG</p>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight">
+                        Halo, Teman-teman <span class="text-yellow-400">Applied Technology</span> 👋
+                    </h2>
+                    <p class="text-sky-100/80 mt-3 text-sm sm:text-base max-w-2xl leading-relaxed">
+                        Web ini berfungsi sebagai tools untuk memudahkan member dan staff Applied Technology Department
+                        baik mekanik maupun elektrik menjalankan tugas dan kewajibannya terhadap gudang sparepart IAT.
+                    </p>
+                    <div class="flex flex-wrap gap-3 mt-6">
+                        <a href="#news-section" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all">
+                            <i class="fa-solid fa-newspaper mr-2"></i>Baca News Hari Ini
+                        </a>
+                        <a href="#apps-section" class="bg-white/10 hover:bg-white/20 border border-white/20 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all">
+                            <i class="fa-solid fa-grip mr-2"></i>Lihat Aplikasi
+                        </a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5">
+                        <div class="text-[11px] uppercase tracking-wider text-sky-200/80 font-semibold" id="today-date">-</div>
+                        <div class="mono text-4xl font-bold mt-1" id="clock">--:--</div>
+                        <div class="text-[11px] text-sky-200/60 mt-1">Waktu Indonesia Barat</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4">
+                        <div class="mono text-3xl font-bold text-yellow-400" id="total-apps">0</div>
+                        <div class="text-[11px] uppercase tracking-wider text-sky-200/80 font-semibold mt-1">Web Terdaftar</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4">
+                        <div class="mono text-3xl font-bold text-yellow-400" id="total-news">0</div>
+                        <div class="text-[11px] uppercase tracking-wider text-sky-200/80 font-semibold mt-1">News Hari Ini</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEWS -->
+        <section id="news-section" class="scroll-mt-24">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
+                <div>
+                    <p class="mono text-xs text-sky-700 tracking-[0.2em] font-bold">PAPAN INFORMASI</p>
+                    <h3 class="text-2xl font-extrabold text-slate-900">News Hari Ini</h3>
+                    <p class="text-sm text-slate-500">Informasi & pengumuman terbaru untuk seluruh pekerja.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="bg-white border border-slate-200 rounded-xl p-1 flex text-xs font-semibold">
+                        <button onclick="setNewsFilter('today')" data-filter="today" class="news-filter px-3 py-1.5 rounded-lg">Hari Ini</button>
+                        <button onclick="setNewsFilter('all')" data-filter="all" class="news-filter px-3 py-1.5 rounded-lg">Semua</button>
+                    </div>
+                    <button id="btn-tambah-news" onclick="openNewsModal()" class="hidden bg-[#0b1b33] hover:bg-[#10294d] text-white font-semibold px-4 py-2 rounded-xl text-sm items-center gap-2">
+                        <i class="fa-solid fa-plus text-xs"></i> Tambah News
                     </button>
                 </div>
             </div>
 
-        </div>
-    </header>
+            <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h2 class="text-2xl sm:text-3xl font-bold">
-                    Selamat Datang, Teman-teman Applied Technology 👋
-                </h2>
-                <p class="text-blue-100 mt-1 text-sm sm:text-base max-w-xl">
-                    Web ini berfungsi sebagai tools untuk memudahkan member dan staff Applied Technology Department
-                    baik mekanik mapun elektrik menjalankan tugas dan kewajibannya terhadap gudang saprepart IAT.
-                </p>
-            </div>
-
-            <div class="bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl border border-white/20 flex items-center space-x-4">
-                <div class="text-3xl font-bold" id="total-apps">0</div>
-                <div class="text-xs text-blue-100 uppercase tracking-wider font-semibold">
-                    Total Web <br> Terdaftar
+        <!-- APPS -->
+        <section id="apps-section" class="scroll-mt-24">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-5">
+                <div>
+                    <p class="mono text-xs text-sky-700 tracking-[0.2em] font-bold">DIREKTORI</p>
+                    <h3 class="text-2xl font-extrabold text-slate-900">Aplikasi & Web Internal</h3>
+                    <p class="text-sm text-slate-500" id="status-akses-teks">Mode Tamu (Read-Only)</p>
+                </div>
+                <div class="relative w-full sm:w-80">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
+                    <input type="text" id="search-input" onkeyup="renderApps()" placeholder="Cari nama web..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm">
                 </div>
             </div>
-        </div>
 
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-            <div class="relative w-full sm:w-80">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                </span>
-                <input type="text" id="search-input" onkeyup="renderApps()" placeholder="Cari nama web..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+            <div id="apps-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+
+            <div id="empty-state" class="hidden text-center py-16">
+                <div class="text-slate-300 text-5xl mb-3"><i class="fa-solid fa-folder-open"></i></div>
+                <h3 class="text-lg font-medium text-slate-700">Tidak ada web ditemukan</h3>
+                <p class="text-sm text-slate-500 mt-1">Coba kata kunci lain atau tambahkan web baru.</p>
             </div>
-            <div class="text-sm text-slate-500 w-full sm:w-auto text-right" id="status-akses-teks">
-                Mode Tamu (Read-Only)
-            </div>
-        </div>
-
-        <div id="apps-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-
-        <div id="empty-state" class="hidden text-center py-16">
-            <div class="text-slate-300 text-5xl mb-3">
-                <i class="fa-solid fa-folder-open"></i>
-            </div>
-            <h3 class="text-lg font-medium text-slate-700">Tidak ada web ditemukan</h3>
-            <p class="text-sm text-slate-500 mt-1">Coba kata kunci lain atau tambahkan web baru.</p>
-        </div>
-
+        </section>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+    <footer class="bg-[#0b1b33] text-sky-200/60 py-5 mt-10">
+        <div class="hazard h-1 w-full -mt-5 mb-5"></div>
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs">
             &copy; 2026 domingo. All rights reserved. Built for electrical IAT team.
         </div>
     </footer>
 
-    <div id="app-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <!-- MODAL WEB -->
+    <div id="app-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 id="modal-title" class="font-bold text-slate-800 text-lg">Tambah Web Baru</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-lg p-1">&times;</button>
             </div>
-
             <form id="app-form" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
                 <input type="hidden" id="app-id">
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nama Web</label>
-                    <input type="text" id="app-name" required placeholder="Contoh: Web Laporan Project" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="app-name" required placeholder="Contoh: Web Laporan Project" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Link URL</label>
-                    <input type="url" id="app-url" required placeholder="https://contoh.com" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="url" id="app-url" required placeholder="https://contoh.com" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Kategori</label>
-                    <select id="app-category" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <select id="app-category" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white">
                         <option value="Manajemen">Manajemen & Laporan</option>
                         <option value="Kontrol">Kontrol & Logistik</option>
                         <option value="Kalkulator">Kalkulator & Tools</option>
@@ -138,10 +197,9 @@
                         <option value="Lainnya">Lainnya</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Pilih Ikon FontAwesome</label>
-                    <select id="app-icon" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <select id="app-icon" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white">
                         <option value="fa-chart-pie">📈 Grafik / Laporan</option>
                         <option value="fa-gears">⚙️ Sparepart / Mesin</option>
                         <option value="fa-calculator">🧮 Kalkulator</option>
@@ -151,21 +209,81 @@
                         <option value="fa-shield-halved">🛡️ Keamanan</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Deskripsi Singkat</label>
-                    <textarea id="app-desc" rows="2" placeholder="Penjelasan singkat fungsi web..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <textarea id="app-desc" rows="2" placeholder="Penjelasan singkat fungsi web..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
                 </div>
-
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
-                    <button type="submit" id="save-button" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-sm">Simpan</button>
+                    <button type="submit" id="save-button" class="px-5 py-2 bg-[#0b1b33] hover:bg-[#10294d] text-white rounded-xl text-sm font-medium">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="login-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <!-- MODAL NEWS -->
+    <div id="news-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden">
+            <div class="hazard h-1.5"></div>
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 id="news-modal-title" class="font-bold text-slate-800 text-lg">Tambah News</h3>
+                <button onclick="closeNewsModal()" class="text-slate-400 hover:text-slate-600 text-lg p-1">&times;</button>
+            </div>
+            <form onsubmit="handleNewsSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="news-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Judul</label>
+                    <input type="text" id="news-title" required placeholder="Contoh: Shutdown Line 2 jam 13:00" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Kategori</label>
+                        <select id="news-category" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <option value="Penting">🔴 Penting</option>
+                            <option value="Safety">🦺 Safety</option>
+                            <option value="Info">🔵 Info</option>
+                            <option value="Umum">⚪ Umum</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tanggal</label>
+                        <input type="date" id="news-date" required class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Isi Informasi</label>
+                    <textarea id="news-content" rows="4" required placeholder="Tulis detail informasi untuk pekerja..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Ditulis oleh</label>
+                    <input type="text" id="news-author" placeholder="Contoh: Supervisor Elektrik" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeNewsModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
+                    <button type="submit" id="news-save-button" class="px-5 py-2 bg-[#0b1b33] hover:bg-[#10294d] text-white rounded-xl text-sm font-medium">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL BACA NEWS -->
+    <div id="news-read-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden">
+            <div class="hazard h-1.5"></div>
+            <div class="p-6">
+                <div class="flex justify-between items-start gap-4">
+                    <div id="news-read-badge"></div>
+                    <button onclick="document.getElementById('news-read-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+                </div>
+                <h3 id="news-read-title" class="text-xl font-extrabold text-slate-900 mt-3"></h3>
+                <p id="news-read-meta" class="text-xs text-slate-500 mt-1"></p>
+                <p id="news-read-content" class="text-sm text-slate-700 mt-4 leading-relaxed whitespace-pre-line"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL (tidak diubah) -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl overflow-hidden p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-slate-800 text-lg">Login Admin IAT</h3>
@@ -174,7 +292,7 @@
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Password Admin</label>
-                    <input type="password" id="admin-password" required placeholder="Masukkan sandi..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="password" id="admin-password" required placeholder="Masukkan sandi..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
                     <button type="button" onclick="closeLoginModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-sm font-medium">Batal</button>
@@ -191,41 +309,70 @@
 
     <script>
         let apps = [];
+        let news = [];
+        let newsFilter = 'today';
         let isAdmin = localStorage.getItem('iat_admin_logged') === 'true';
 
-        // Inisialisasi Tampilan Berdasarkan Status Login
+        const NEWS_STYLE = {
+            Penting: { badge: 'bg-red-100 text-red-700', bar: 'bg-red-500', icon: 'fa-triangle-exclamation' },
+            Safety:  { badge: 'bg-yellow-100 text-yellow-800', bar: 'bg-yellow-400', icon: 'fa-helmet-safety' },
+            Info:    { badge: 'bg-sky-100 text-sky-700', bar: 'bg-sky-500', icon: 'fa-circle-info' },
+            Umum:    { badge: 'bg-slate-100 text-slate-600', bar: 'bg-slate-400', icon: 'fa-bullhorn' }
+        };
+
+        // ================= JAM & TANGGAL =================
+        function todayStr() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+        function formatDate(s) {
+            if (!s) return '-';
+            const d = new Date(String(s).slice(0, 10) + 'T00:00:00');
+            if (isNaN(d)) return s;
+            return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        function tickClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('today-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            const h = now.getHours();
+            document.getElementById('greeting-label').innerText =
+                h < 11 ? 'SELAMAT PAGI' : h < 15 ? 'SELAMAT SIANG' : h < 18 ? 'SELAMAT SORE' : 'SELAMAT MALAM';
+        }
+        setInterval(tickClock, 1000);
+
+        // ================= AUTH (sama seperti sebelumnya) =================
         function updateAuthUI() {
             const btnTambah = document.getElementById('btn-tambah');
+            const btnNews = document.getElementById('btn-tambah-news');
             const authContainer = document.getElementById('admin-auth-container');
             const statusTeks = document.getElementById('status-akses-teks');
 
             if (isAdmin) {
-                btnTambah.classList.remove('hidden');
+                btnTambah.classList.remove('hidden'); btnTambah.classList.add('flex');
+                btnNews.classList.remove('hidden'); btnNews.classList.add('flex');
                 statusTeks.innerHTML = '<span class="text-emerald-600 font-semibold"><i class="fa-solid fa-shield-halved mr-1"></i> Mode Admin Aktif</span>';
                 authContainer.innerHTML = `
-                    <button onclick="handleLogout()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium px-3.5 py-2 rounded-xl text-sm transition-all flex items-center space-x-2">
-                        <i class="fa-solid fa-right-from-bracket text-xs"></i>
-                        <span>Logout</span>
-                    </button>
-                `;
+                    <button onclick="handleLogout()" class="bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 font-medium px-3.5 py-2 rounded-xl text-sm transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-right-from-bracket text-xs"></i><span>Logout</span>
+                    </button>`;
             } else {
-                btnTambah.classList.add('hidden');
+                btnTambah.classList.add('hidden'); btnTambah.classList.remove('flex');
+                btnNews.classList.add('hidden'); btnNews.classList.remove('flex');
                 statusTeks.innerText = 'Mode Tamu (Read-Only)';
                 authContainer.innerHTML = `
-                    <button onclick="openLoginModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3.5 py-2 rounded-xl text-sm transition-all flex items-center space-x-2">
-                        <i class="fa-solid fa-lock text-xs"></i>
-                        <span>Admin Login</span>
-                    </button>
-                `;
+                    <button onclick="openLoginModal()" class="bg-white/10 hover:bg-white/20 text-white font-medium px-3.5 py-2 rounded-xl text-sm transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-lock text-xs"></i><span>Admin Login</span>
+                    </button>`;
             }
             renderApps();
+            renderNews();
         }
 
-        // Login Handler (Password dapat disesuaikan, misal: "adminiat2026")
         function handleLogin(event) {
             event.preventDefault();
             const pass = document.getElementById('admin-password').value;
-            
+
             if (pass === 'admin2026') {
                 isAdmin = true;
                 localStorage.setItem('iat_admin_logged', 'true');
@@ -245,32 +392,188 @@
             showToast('Berhasil keluar dari mode Admin.');
         }
 
-        function openLoginModal() {
-            document.getElementById('login-modal').classList.remove('hidden');
-        }
-
-        function closeLoginModal() {
-            document.getElementById('login-modal').classList.add('hidden');
-        }
+        function openLoginModal() { document.getElementById('login-modal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('login-modal').classList.add('hidden'); }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = message;
             toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
+        function escapeHTML(value) {
+            return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeAttribute(value) {
+            return String(value).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // ================= NEWS =================
+        function setNewsFilter(f) { newsFilter = f; renderNews(); }
+
+        function sortedNews() {
+            return [...news].sort((a, b) => String(b.date).localeCompare(String(a.date)) || Number(b.id) - Number(a.id));
+        }
+
+        function renderTicker() {
+            const t = document.getElementById('news-ticker');
+            const today = sortedNews().filter(n => String(n.date).slice(0, 10) === todayStr());
+            const list = today.length ? today : sortedNews().slice(0, 5);
+            if (!list.length) {
+                t.innerHTML = '<span class="px-6">Belum ada informasi hari ini. Tetap utamakan keselamatan kerja! 🦺</span>';
+                return;
+            }
+            const items = list.map(n => `<span class="px-6"><i class="fa-solid ${(NEWS_STYLE[n.category] || NEWS_STYLE.Umum).icon} mr-2"></i>${escapeHTML(n.title)}</span><span class="opacity-40">◆</span>`).join('');
+            t.innerHTML = items + items;
+        }
+
+        function renderNews() {
+            const grid = document.getElementById('news-grid');
+            const today = todayStr();
+            const todayCount = news.filter(n => String(n.date).slice(0, 10) === today).length;
+            document.getElementById('total-news').innerText = todayCount;
+
+            document.querySelectorAll('.news-filter').forEach(b => {
+                const active = b.dataset.filter === newsFilter;
+                b.className = 'news-filter px-3 py-1.5 rounded-lg ' + (active ? 'bg-[#0b1b33] text-white' : 'text-slate-500 hover:text-slate-800');
+            });
+
+            let list = sortedNews();
+            if (newsFilter === 'today') list = list.filter(n => String(n.date).slice(0, 10) === today);
+
+            renderTicker();
+
+            if (!list.length) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center">
+                        <div class="text-4xl mb-2">📭</div>
+                        <p class="font-semibold text-slate-700">${newsFilter === 'today' ? 'Belum ada news untuk hari ini' : 'Belum ada news'}</p>
+                        <p class="text-sm text-slate-500 mt-1">${isAdmin ? 'Klik "Tambah News" untuk membuat informasi baru.' : 'Cek kembali nanti untuk informasi terbaru.'}</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map((n, i) => {
+                const st = NEWS_STYLE[n.category] || NEWS_STYLE.Umum;
+                const isToday = String(n.date).slice(0, 10) === today;
+                const admin = isAdmin ? `
+                    <div class="flex gap-1">
+                        <button onclick="event.stopPropagation(); openNewsModal('${escapeAttribute(n.id)}')" class="text-slate-400 hover:text-sky-600 p-1.5"><i class="fa-solid fa-pen-to-square text-sm"></i></button>
+                        <button onclick="event.stopPropagation(); deleteNews('${escapeAttribute(n.id)}')" class="text-slate-400 hover:text-rose-600 p-1.5"><i class="fa-solid fa-trash text-sm"></i></button>
+                    </div>` : '';
+                return `
+                    <article onclick="readNews('${escapeAttribute(n.id)}')" style="animation-delay:${i * 60}ms" class="rise cursor-pointer bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col ${i === 0 && n.category === 'Penting' ? 'md:col-span-2 lg:col-span-1 ring-2 ring-red-200' : ''}">
+                        <div class="${st.bar} h-1.5"></div>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${st.badge}"><i class="fa-solid ${st.icon} mr-1"></i>${escapeHTML(n.category || 'Umum')}</span>
+                                    ${isToday ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 mono">BARU</span>' : ''}
+                                </div>
+                                ${admin}
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg leading-snug line-clamp-2">${escapeHTML(n.title || '')}</h4>
+                            <p class="text-sm text-slate-500 mt-2 leading-relaxed line-clamp-3 flex-1">${escapeHTML(n.content || '')}</p>
+                            <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400">
+                                <span><i class="fa-regular fa-calendar mr-1"></i>${escapeHTML(formatDate(n.date))}</span>
+                                <span class="truncate ml-2"><i class="fa-regular fa-user mr-1"></i>${escapeHTML(n.author || 'Admin')}</span>
+                            </div>
+                        </div>
+                    </article>`;
+            }).join('');
+        }
+
+        function readNews(id) {
+            const n = news.find(x => String(x.id) === String(id));
+            if (!n) return;
+            const st = NEWS_STYLE[n.category] || NEWS_STYLE.Umum;
+            document.getElementById('news-read-badge').innerHTML = `<span class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${st.badge}"><i class="fa-solid ${st.icon} mr-1"></i>${escapeHTML(n.category || 'Umum')}</span>`;
+            document.getElementById('news-read-title').innerText = n.title || '';
+            document.getElementById('news-read-meta').innerText = formatDate(n.date) + ' • ' + (n.author || 'Admin');
+            document.getElementById('news-read-content').innerText = n.content || '';
+            document.getElementById('news-read-modal').classList.remove('hidden');
+        }
+
+        function openNewsModal(id) {
+            if (!isAdmin) return showToast('Akses ditolak. Silakan login sebagai admin.');
+            const n = id ? news.find(x => String(x.id) === String(id)) : null;
+            document.getElementById('news-modal-title').innerText = n ? 'Edit News' : 'Tambah News';
+            document.getElementById('news-id').value = n ? n.id : '';
+            document.getElementById('news-title').value = n ? n.title : '';
+            document.getElementById('news-category').value = n ? (n.category || 'Umum') : 'Info';
+            document.getElementById('news-date').value = n ? String(n.date).slice(0, 10) : todayStr();
+            document.getElementById('news-content').value = n ? n.content : '';
+            document.getElementById('news-author').value = n ? (n.author || '') : '';
+            document.getElementById('news-save-button').innerText = n ? 'Update' : 'Simpan';
+            document.getElementById('news-modal').classList.remove('hidden');
+        }
+        function closeNewsModal() { document.getElementById('news-modal').classList.add('hidden'); }
+
+        async function handleNewsSubmit(event) {
+            event.preventDefault();
+            if (!isAdmin) return;
+            const id = document.getElementById('news-id').value;
+            const item = {
+                id: id,
+                title: document.getElementById('news-title').value.trim(),
+                category: document.getElementById('news-category').value,
+                date: document.getElementById('news-date').value,
+                content: document.getElementById('news-content').value.trim(),
+                author: document.getElementById('news-author').value.trim() || 'Admin'
+            };
+            const btn = document.getElementById('news-save-button');
+            try {
+                btn.disabled = true; btn.innerText = 'Menyimpan...';
+                if (id) { await updateNewsToDatabase(item); showToast('News berhasil diperbarui!'); }
+                else { await addNewsToDatabase(item); showToast('News berhasil ditambahkan!'); }
+                news = await getNewsFromDatabase();
+                renderNews();
+                closeNewsModal();
+            } catch (error) {
+                console.error('NEWS ERROR:', error);
+                showToast(error.message || 'Gagal menyimpan news.');
+            } finally {
+                btn.disabled = false; btn.innerText = id ? 'Update' : 'Simpan';
+            }
+        }
+
+        async function deleteNews(id) {
+            if (!isAdmin) return showToast('Akses ditolak.');
+            if (!confirm('Hapus news ini?')) return;
+            try {
+                showToast('Menghapus news...');
+                await deleteNewsFromDatabase(id);
+                news = await getNewsFromDatabase();
+                renderNews();
+                showToast('News berhasil dihapus!');
+            } catch (error) {
+                console.error('DELETE NEWS ERROR:', error);
+                showToast(error.message || 'Gagal menghapus news.');
+            }
+        }
+
+        async function loadNews() {
+            document.getElementById('news-grid').innerHTML = '<div class="col-span-full text-center py-10 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></div>';
+            try {
+                const data = await getNewsFromDatabase();
+                news = Array.isArray(data) ? data.filter(n => n && n.title) : [];
+            } catch (e) {
+                console.warn('News belum tersedia:', e);
+                news = [];
+            }
+            renderNews();
+        }
+
+        // ================= APPS =================
         function showLoading() {
             document.getElementById('apps-grid').innerHTML = `
                 <div class="col-span-full flex justify-center py-16">
                     <div class="text-center">
-                        <i class="fa-solid fa-spinner fa-spin text-blue-600 text-3xl"></i>
+                        <i class="fa-solid fa-spinner fa-spin text-sky-600 text-3xl"></i>
                         <p class="text-sm text-slate-500 mt-3">Mengambil data aplikasi...</p>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         function renderApps() {
@@ -278,7 +581,7 @@
             const emptyState = document.getElementById('empty-state');
             const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
 
-            const filteredApps = apps.filter(app => 
+            const filteredApps = apps.filter(app =>
                 String(app.name || '').toLowerCase().includes(searchQuery) ||
                 String(app.desc || '').toLowerCase().includes(searchQuery) ||
                 String(app.category || '').toLowerCase().includes(searchQuery)
@@ -291,62 +594,39 @@
                 emptyState.classList.remove('hidden');
                 return;
             }
-
             emptyState.classList.add('hidden');
             grid.innerHTML = '';
 
-            filteredApps.forEach(app => {
+            filteredApps.forEach((app, i) => {
                 const card = document.createElement('div');
-                card.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group';
+                card.style.animationDelay = (i * 40) + 'ms';
+                card.className = 'rise bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-sky-300 transition-all duration-300 flex flex-col justify-between overflow-hidden group';
 
-                // Render tombol aksi (Edit & Hapus) hanya jika berstatus admin
-                let actionButtonsHTML = '';
-                if (isAdmin) {
-                    actionButtonsHTML = `
-                        <div class="flex space-x-2">
-                            <button onclick="openEditModal(${app.id})" title="Edit" class="text-slate-400 hover:text-blue-600 p-1.5 transition-colors">
-                                <i class="fa-solid fa-pen-to-square text-sm"></i>
-                            </button>
-                            <button onclick="deleteApp(${app.id})" title="Hapus" class="text-slate-400 hover:text-rose-600 p-1.5 transition-colors">
-                                <i class="fa-solid fa-trash text-sm"></i>
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    actionButtonsHTML = `<span class="text-[11px] text-slate-400 italic">Read-only</span>`;
-                }
+                const actionButtonsHTML = isAdmin ? `
+                    <div class="flex space-x-1">
+                        <button onclick="openEditModal(${app.id})" title="Edit" class="text-slate-400 hover:text-sky-600 p-1.5"><i class="fa-solid fa-pen-to-square text-sm"></i></button>
+                        <button onclick="deleteApp(${app.id})" title="Hapus" class="text-slate-400 hover:text-rose-600 p-1.5"><i class="fa-solid fa-trash text-sm"></i></button>
+                    </div>` : `<span class="text-[11px] text-slate-400 mono">#${String(i + 1).padStart(2, '0')}</span>`;
 
                 card.innerHTML = `
-                    <div class="p-6">
+                    <div class="p-5">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:bg-blue-600 group-hover:text-white transition-all shadow-inner">
+                            <div class="w-12 h-12 rounded-xl bg-[#0b1b33] text-yellow-400 flex items-center justify-center text-xl group-hover:bg-yellow-400 group-hover:text-[#0b1b33] group-hover:rotate-6 transition-all">
                                 <i class="fa-solid ${app.icon || 'fa-globe'}"></i>
                             </div>
-                            <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">
-                                ${escapeHTML(app.category || 'Lainnya')}
-                            </span>
+                            <span class="text-[11px] font-semibold px-2.5 py-1 bg-sky-50 text-sky-700 rounded-lg">${escapeHTML(app.category || 'Lainnya')}</span>
                         </div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">${escapeHTML(app.name || 'Tanpa Nama')}</h3>
+                        <h3 class="font-bold text-slate-900 text-lg mb-1">${escapeHTML(app.name || 'Tanpa Nama')}</h3>
                         <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed">${escapeHTML(app.desc || 'Tidak ada deskripsi.')}</p>
                     </div>
-                    <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                    <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
                         ${actionButtonsHTML}
-                        <a href="${escapeAttribute(app.url || '#')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3.5 py-2 rounded-xl transition-all shadow-sm">
-                            <span>Buka Web</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        <a href="${escapeAttribute(app.url || '#')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 bg-[#0b1b33] group-hover:bg-yellow-400 text-white group-hover:text-[#0b1b33] text-xs font-semibold px-3.5 py-2 rounded-lg transition-all">
+                            <span>Buka Web</span><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </a>
-                    </div>
-                `;
+                    </div>`;
                 grid.appendChild(card);
             });
-        }
-
-        function escapeHTML(value) {
-            return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-        }
-
-        function escapeAttribute(value) {
-            return String(value).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
         function openModal() {
@@ -366,7 +646,6 @@
             if (!isAdmin) return showToast('Akses ditolak.');
             const app = apps.find(item => Number(item.id) === Number(id));
             if (!app) return showToast('Data web tidak ditemukan.');
-
             document.getElementById('modal-title').innerText = 'Edit Web';
             document.getElementById('app-id').value = app.id;
             document.getElementById('app-name').value = app.name || '';
@@ -378,14 +657,11 @@
             document.getElementById('app-modal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('app-modal').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('app-modal').classList.add('hidden'); }
 
         async function handleFormSubmit(event) {
             event.preventDefault();
             if (!isAdmin) return;
-
             const id = document.getElementById('app-id').value;
             const app = {
                 id: id,
@@ -396,20 +672,11 @@
                 desc: document.getElementById('app-desc').value.trim(),
                 status: 'Aktif'
             };
-
+            const saveButton = document.getElementById('save-button');
             try {
-                const saveButton = document.getElementById('save-button');
-                saveButton.disabled = true;
-                saveButton.innerText = 'Menyimpan...';
-
-                if (id) {
-                    await updateAppToDatabase(app);
-                    showToast('Web berhasil diperbarui!');
-                } else {
-                    await addAppToDatabase(app);
-                    showToast('Web berhasil ditambahkan!');
-                }
-
+                saveButton.disabled = true; saveButton.innerText = 'Menyimpan...';
+                if (id) { await updateAppToDatabase(app); showToast('Web berhasil diperbarui!'); }
+                else { await addAppToDatabase(app); showToast('Web berhasil ditambahkan!'); }
                 apps = await getAppsFromDatabase();
                 renderApps();
                 closeModal();
@@ -417,16 +684,13 @@
                 console.error('FORM ERROR:', error);
                 showToast(error.message || 'Gagal menyimpan data.');
             } finally {
-                const saveButton = document.getElementById('save-button');
-                saveButton.disabled = false;
-                saveButton.innerText = id ? 'Update' : 'Simpan';
+                saveButton.disabled = false; saveButton.innerText = id ? 'Update' : 'Simpan';
             }
         }
 
         async function deleteApp(id) {
             if (!isAdmin) return showToast('Akses ditolak.');
             if (!confirm('Apakah Anda yakin ingin menghapus akses web ini dari portal?')) return;
-
             try {
                 showToast('Menghapus web...');
                 await deleteAppFromDatabase(id);
@@ -451,122 +715,26 @@
                         <div class="text-rose-400 text-5xl mb-4"><i class="fa-solid fa-triangle-exclamation"></i></div>
                         <h3 class="text-lg font-semibold text-slate-700">Gagal Menghubungkan Database</h3>
                         <p class="text-sm text-slate-500 mt-2">Pastikan URL Apps Script dan konfigurasi API sudah benar.</p>
-                        <button onclick="loadApps()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm">
+                        <button onclick="loadApps()" class="mt-4 bg-[#0b1b33] text-white px-4 py-2 rounded-xl text-sm">
                             <i class="fa-solid fa-rotate-right mr-2"></i> Coba Lagi
                         </button>
-                    </div>
-                `;
+                    </div>`;
                 document.getElementById('total-apps').innerText = '0';
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            tickClock();
+            updateAuthUI();
             loadApps();
+            loadNews();
         });
 
-        document.getElementById('app-modal').addEventListener('click', function(event) {
-            if (event.target === this) closeModal();
+        ['app-modal', 'news-modal', 'news-read-modal', 'login-modal'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function (e) {
+                if (e.target === this) this.classList.add('hidden');
+            });
         });
     </script>
-<!-- ===================================================== -->
-<!-- BACKGROUND MUSIC PLAYER -->
-<!-- ===================================================== -->
-<audio id="bg-music" loop>
- <!--  <source src="Astaga Bercanda - Akbar Chalay ft Mingse _Pop Punk Cover _ VoxAura _ nggak bercanda ini mah ngegas 🤘.mp3" type="audio/mpeg">
-    Browser Anda tidak mendukung elemen audio.-->
-</audio>
-
-<!-- Widget Kontrol Musik Melayang di Pojok Kiri Bawah -->
- <div class="fixed bottom-6 left-6 z-40">
-    <button onclick="toggleMusic()" id="music-btn" class="bg-white/80 hover:bg-white backdrop-blur-md text-slate-700 border border-slate-200 px-4 py-2.5 rounded-full shadow-lg text-xs font-medium flex items-center space-x-2 transition-all">
-        <i id="music-icon" class="fa-solid fa-volume-xmark text-slate-400"></i>
-        <span id="music-text">Putar Musik</span>
-    </button>
-</div> --> 
-<!-- ===================================================== -->
-<!-- BACKGROUND MUSIC PLAYER (YOUTUBE EMBED TERSEMBUNYI) -->
-<!-- ===================================================== -->
-<!-- <div style="display: none;">
-    <iframe id="youtube-player" 
-            src="https://www.youtube.com/embed/AGvGldtbJSU?enablejsapi=1&loop=1&playlist=AGvGldtbJSU" 
-            allow="autoplay">
-    </iframe>
-</div>
-
-<!-- Widget Kontrol Musik Melayang di Pojok Kiri Bawah -->
-<!-- <div class="fixed bottom-6 left-6 z-40">
-    <button onclick="toggleMusic()" id="music-btn" class="bg-white/80 hover:bg-white backdrop-blur-md text-slate-700 border border-slate-200 px-4 py-2.5 rounded-full shadow-lg text-xs font-medium flex items-center space-x-2 transition-all cursor-pointer">
-        <i id="music-icon" class="fa-solid fa-volume-xmark text-slate-400"></i>
-        <span id="music-text">Putar Musik</span>
-    </button>
-</div>-->
-
-<script>
-    // Logika Pemutar Musik
-    const music = document.getElementById('bg-music');
-    const musicBtn = document.getElementById('music-btn');
-    const musicIcon = document.getElementById('music-icon');
-    const musicText = document.getElementById('music-text');
-    let isPlaying = false;
-
-    function toggleMusic() {
-        if (isPlaying) {
-            music.pause();
-            musicIcon.className = "fa-solid fa-volume-xmark text-slate-400";
-            musicText.innerText = "Putar Musik";
-            musicBtn.classList.remove('bg-blue-50', 'border-blue-300', 'text-blue-600');
-            isPlaying = false;
-        } else {
-            music.play().then(() => {
-                musicIcon.className = "fa-solid fa-volume-high text-blue-600 animate-pulse";
-                musicText.innerText = "Musik Aktif";
-                musicBtn.classList.add('bg-blue-50', 'border-blue-300', 'text-blue-600');
-                isPlaying = true;
-            }).catch(error => {
-                console.log("Autoplay dicegah browser:", error);
-            });
-        }
-    }
-
-    // Coba putar otomatis saat pertama kali user klik/menyentuh halaman web
-    document.body.addEventListener('click', function initAutoPlay() {
-        if (!isPlaying) {
-            music.play().then(() => {
-                musicIcon.className = "fa-solid fa-volume-high text-blue-600 animate-pulse";
-                musicText.innerText = "Musik Aktif";
-                musicBtn.classList.add('bg-blue-50', 'border-blue-300', 'text-blue-600');
-                isPlaying = true;
-            }).catch(e => {});
-        }
-    }, { once: true }); // Hanya berjalan sekali saat klik pertama di halaman
-</script>
-<!-- <script>
-    let isPlaying = false;
-
-    function toggleMusic() {
-        const iframe = document.getElementById('youtube-player');
-        const musicIcon = document.getElementById('music-icon');
-        const musicText = document.getElementById('music-text');
-        const playerOrigin = 'https://www.youtube.com';
-
-        if (!isPlaying) {
-            iframe.contentWindow.postMessage(
-                '{"event":"command","func":"playVideo","args":""}', 
-                playerOrigin
-            );
-            musicIcon.className = "fa-solid fa-volume-high text-emerald-500 animate-pulse";
-            musicText.textContent = "Matikan Musik";
-            isPlaying = true;
-        } else {
-            iframe.contentWindow.postMessage(
-                '{"event":"command","func":"pauseVideo","args":""}', 
-                playerOrigin
-            );
-            musicIcon.className = "fa-solid fa-volume-xmark text-slate-400";
-            musicText.textContent = "Putar Musik";
-            isPlaying = false;
-        }
-    }
-</script>-->
 </body>
 </html>
