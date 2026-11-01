@@ -6,7 +6,7 @@
 // =============================================
 
 const API_URL =
-    //'https://script.google.com/macros/s/AKfycbwG2s3ZeEa0NORzzJDSvCuhzL9j1ssahPFCNzCIeXMSE2jZP2riFnQTnbYawc6vT8YfWQ/exec';
+    'https://script.google.com/macros/s/AKfycbwG2s3ZeEa0NORzzJDSvCuhzL9j1ssahPFCNzCIeXMSE2jZP2riFnQTnbYawc6vT8YfWQ/exec';
 
 const ADMIN_TOKEN_KEY = 'iat_admin_token';
 
